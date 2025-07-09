@@ -1,0 +1,114 @@
+M MongoDB
+E Express.js 
+R React.Js (done)
+N Node.js
+
+
+Node.Js
+
+
+-> Node.js is a javascript runtime environment, that allows us to run javascript code outside a web browser 24X7
+-> its build on chrome's V8 Engine, hence it provides us with features that help in building scalable, reliable and efficient network server applications
+
+
+Features
+
+-> Asynchronous and non blocking execution of features 
+
+Server ------- DB
+
+ask -------3rd party -> might take time -> asynchronous 
+
+-> Event driven architecture -> uses an event loop and event emitter to manage the asynchronous operations
+
+whenever is something required only then it provides it 
+
+
+//call an API -> only then the database is called, the feature are accessed otherwise nothing happens
+
+
+server costs -> optimise -> event driven approach 
+
+-> Single threaded but highly scalable -> efficient 
+
+-> Rich Support of different technologies 
+
+
+setup node js project
+
+
+install node js in your system 
+
+npm init -> intialises node package manager inside the folder 
+
+it creates a package.json file which manages the node project
+
+then we create index.js file that is the main file or endpoint of our project 
+
+
+Express.JS
+
+
+it is a minimal, and flexible framework for Node.js -> BUILD APIs
+
+
+API -> Application Programming Interface 
+sending and recieving the data -> channel 
+
+
+Features-> 
+
+Building APIs -> Routes -> define different links or paths of our server that help the user access different kinds of information 
+
+
+Middlewares-> functions that execute before responding to any request 
+
+
+Request -> Authenticate (Middleware)-> Responded 
+
+Req and Res as objects -> body -> email, password -> object 
+
+
+MongoDB -> noSQL, non relational, document oriented database that stores the data in a flexible, JSON-like format 
+
+
+
+
+Basic Preqruisites 
+
+Backend programming -> server side of MERN stack -> 
+
+business logic,
+database interaction, 
+communication with the front end -> what info is requiredl what to send, what not to send, in what format, what kind of requests i am going to allow or respond to 
+
+ecommerce server -> product add to cart, order, track, login, quantity price, reviews 
+social media-> post a status, post a reel, comment on some post
+
+
+Routing -> build different links for each feature
+
+
+API Design 
+
+RESTful API -> 
+representational state transfer -> API call-> whatever information is required for that api to send us a response, we should send that information along with the api call
+
+a single api call should not depend on any other function or resource.
+
+-> Authentication -> verifying if a user is a part of our product or not
+
+Amazon-> order-> logged in 
+
+Public and Protected Routes 
+
+Error handling
+Asynchronous
+
+Data Modelling -> defines the format in which we are going to store and manage the data 
+
+
+
+install express 
+
+npm install express

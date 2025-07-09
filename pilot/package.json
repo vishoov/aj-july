@@ -1,0 +1,24 @@
+{
+  "name": "pilot",
+  "version": "1.0.0",
+  "description": "this is the pilot project for nodejs",
+  "keywords": [
+    "pilot",
+    "acciojob",
+    "nodejs",
+    "FAANG",
+    "full",
+    "stack"
+  ],
+  "license": "ISC",
+  "author": "Vishoo Verma",
+  "type": "commonjs",
+  "main": "index.js",
+  "scripts": {
+
+    "start": "node index.js"
+  },
+  "dependencies": {
+    "express": "^5.1.0"
+  }
+}
