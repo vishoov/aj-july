@@ -3,14 +3,25 @@
 const express  = require('express');
 //import express module
 
+//to be explained later 
 
-
+const dummyBlogs = [
+    {
+        id: 1,
+        title: "First Blog",
+        content: "This is the content of the first blog",
+        author: "John Doe",
+        createdAt: new Date(),
+        updatedAt: new Date()
+    }
+]
 
 
 //import all the modules 
 
 //setup the express app -> the actual server 
 const app = express();
+app.use(express.json());
 
 
 //basic route to test if the server is working
@@ -24,6 +35,43 @@ app.get('/', (req, res)=>{
 //syntax -> app.method('route), calbback function)
 
 // app.get("/")
+//route for creating a blog
+app.post("/create-blog", (req, res)=>{
+    //this is a route for creating a blog   
+    const title = req.body.title;
+    const content = req.body.content;
+    const author = req.body.author;
+
+    const newBlog = {
+        id: dummyBlogs.length + 1,
+        title: title,
+        content: content,
+        author: author,
+    }
+
+    
+    console.log("New blog created:", newBlog);
+
+
+    //add the new blog to the dummyBlogs array
+    //we are mimicking the database here
+    dummyBlogs.push(newBlog);
+    console.log(dummyBlogs);
+    res.send({
+        message: "Blog created successfully",
+        blog: newBlog
+    })
+})
+
+//route for getting all blogs
+app.get("/blogs", (req, res)=>{
+    res.send({
+        message: "All blogs fetched successfully",
+        blogs: dummyBlogs
+    })
+})
+
+//route for deleting a blog -> /deleteblog route -> title in body -> delete the blog with that title 
 
 
 //HTTP Methods -> GET, POST, PUT, DELETE, PATCH, OPTIONS, HEAD
