@@ -112,3 +112,9 @@ Data Modelling -> defines the format in which we are going to store and manage t
 install express 
 
 npm install express
+
+
+Nodemon 
+
+
+npm i nodemon
