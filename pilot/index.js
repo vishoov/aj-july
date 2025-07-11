@@ -2,20 +2,16 @@
 
 const express  = require('express');
 //import express module
+const rateLimit = require('express-rate-limit');
+
+
+
 
 //to be explained later 
+const blogRoutes = require('./view/blogroutes');
 
-const dummyBlogs = [
-    {
-        id: 1,
-        title: "First Blog",
-        content: "This is the content of the first blog",
-        author: "John Doe",
-        createdAt: new Date(),
-        updatedAt: new Date()
-    }
-]
 
+const morgan = require('morgan');
 
 //import all the modules 
 
@@ -24,111 +20,63 @@ const app = express();
 app.use(express.json());
 
 
+
+
+//rate limiting middleware
+const limit = rateLimit({
+    windowMs: 15 * 60 * 1000, //15 minutes
+    max: 5, //limit each IP to 100 requests per windowMs
+    message: "Too many requests, please try again later"
+});
+
+
+app.use(limit); //apply the rate limiting middleware to all routes
+
+
+//Logging we are monitoring the requests that are coming to our server
+
+
+
+
+// app.use(morgan('dev'))
+
+//create a custom middleware that will help me in monitoring the requests
+//Logger middleware function
+
+app.use((req, res, next)=>{
+    const method = req.method; //GET, POST, PUT, DELETE
+    const url = req.url; //the url of the request
+    const time = new Date().toLocaleString(); //the time of the request
+    console.log(`[${time}] ${method} request to ${url}`);
+    next(); //this will call the next middleware function in the stack
+})
+
+
+//app.use -> this is a middleware function that will be executed for every request that is defined after it 
+// app.use((req, res, next)=>{
+//     //this is a middleware function
+//     console.log("Middleware function executed");
+//     console.log("Request received at:", new Date().toLocaleString());
+//     // next(); //this will call the next middleware function in the stack
+// })
+
+const middlewareFunction = (req, res, next)=>{
+    //this is a middleware function
+    console.log("Middleware function executed");
+    next()
+}
+
 //basic route to test if the server is working
 //root route -> localhost:3000/ get method 
 //app.get -> this is the function that will handle the request and response
-app.get('/', (req, res)=>{
+app.get('/', middlewareFunction, (req, res)=>{
     //req -> request object, res -> response object
+    console.log("Root route accessed");
     res.send("Hello World!");
+
 })
 //this is a route
 //syntax -> app.method('route), calbback function)
-
-// app.get("/")
-//route for creating a blog
-app.post("/create-blog", (req, res)=>{
-    //this is a route for creating a blog   
-    const title = req.body.title;
-    const content = req.body.content;
-    const author = req.body.author;
-
-    const newBlog = {
-        id: dummyBlogs.length + 1,
-        title: title,
-        content: content,
-        author: author,
-    }
-
-    
-    console.log("New blog created:", newBlog);
-
-
-    //add the new blog to the dummyBlogs array
-    //we are mimicking the database here
-    dummyBlogs.push(newBlog);
-    console.log(dummyBlogs);
-    res.send({
-        message: "Blog created successfully",
-        blog: newBlog
-    })
-})
-
-//route for getting all blogs
-app.get("/blogs", (req, res)=>{
-    res.send({
-        message: "All blogs fetched successfully",
-        blogs: dummyBlogs
-    })
-})
-
-//route for deleting a blog -> /deleteblog route -> title in body -> delete the blog with that title 
-//delete
-//route-> delete-blog
-//body -> { "title": "First Blog" } -> array method to filter out the blog with that title
-//response -> { "message": "Blog deleted successfully" }
-//handler functions HANDLES the request and response 
-app.delete("/delete-blog", (req, res)=>{
-    const title = req.body.title;
-    
-    //filter out the blog with that title
-    const filteredBlogs = dummyBlogs.filter(
-        (blog)=>blog.title !== title
-    )
-
-    //if the length of the filteredBlogs is same as dummyBlogs, then the blog was not found
-    if(filteredBlogs.length === dummyBlogs.length){
-        res.send({message: "Blog was not found"})
-    }
-
-    else{
-        res.send({
-            message: "Blog deleted successfully",
-            blogs: filteredBlogs
-        })
-    }
-})
-
-//update a blog
-app.put("/update-blog", (req, res)=>{
-    const { id, title, content, author } =req.body;
-
-    //find the blog with the given id
-    const blogIndex = dummyBlogs.findIndex(blog=>blog.id === id);
-
-    //if the blog is not found, return an error message
-    if(blogIndex === -1){
-        return res.status(404).send({
-            message: "Blog not found"
-        });
-    }
-
-    //update the blog with the given id
-    const updatedBlog= {
-        ...dummyBlogs[blogIndex],
-        title: title || dummyBlogs[blogIndex].title,
-        content: content || dummyBlogs[blogIndex].content,
-        author: author || dummyBlogs[blogIndex].author,
-        updatedAt: new Date() //update the updatedAt field
-    }
-
-    //replace the old blog with the updated blog
-    dummyBlogs[blogIndex] = updatedBlog;
-
-    res.send({
-        message: "Blog updated successfully",
-        blog: updatedBlog
-    })
-})
 
 app.get("/searcher", (req, res)=>{
     const name = req.query.name || "Searcher";
@@ -139,7 +87,34 @@ app.get("/searcher", (req, res)=>{
     })
 })
 
+app.get("/request", (req, res)=>{
+    console.log(req);
+    res.send({
+        message: "This is the request route",
+        method: req.method,
+        url: req.url,
+        headers: req.headers,
+        query: req.query,
+        params: req.params
+    })
+})
 
+
+app.use((err, req, res, next)=>{
+    //this is a error handling middleware function
+    console.error("Error occurred:", err);
+    res.status(500).send("Internal Server Error");
+})
+
+
+app.get("/error", (req, res)=>{
+    //this will throw an error
+    throw new Error("This is a test error");
+    //this will be caught by the error handling middleware function
+})
+
+app.use("/blog", blogRoutes);
+//this will use the blogRoutes module for all the routes that start with /blog
 
 
 
@@ -159,11 +134,32 @@ app.get("/searcher", (req, res)=>{
 
 //Dynamic Routing Advanced Routing
 //Route Parameters -> dynamic data in the route
-app.get("/greet/:name", (req, res)=>{
+
+const authorization = (req, res, next)=>{
+    const name = req.params.name;
+    if(name === "vishoo"){
+        console.log("Authorized user:", name);
+        next(); //this will call the next middleware function in the stack
+    }
+    else{
+        console.log("Unauthorized user:", name);
+        res.status(403).send("Forbidden: You are not authorized to access this route");
+    }
+}
+
+
+app.get("/greet/:name", authorization, (req, res)=>{
+
+    try{
     //req.params -> the object that contains the route parameters
     const name = req.params.name; 
     //getting the name from the route parameters
     res.send(`Hello ${name}, welcome to the server!`);
+    }
+    catch(err){
+        console.error("Error in /greet/:name route:", err);
+        res.status(500).send("Internal Server Error");
+    }
 })
 
 
@@ -242,3 +238,28 @@ app.listen(3000, ()=>{
     console.log('Server is running on port 3000');
 })
 //app.listen -> this is the function that will make our server listen to a port
+
+
+//even if i use a single route this whole file will be executed
+//this is because the server is running and it will listen to all the requests that come to it
+//and it will execute the code in this file
+
+//this makes our application a little computationally expensive 
+
+
+//whenever there is a lot of requests coming to the server
+//it will create a lot of load on the server and it will slow down the server
+//bottlenecking the server
+
+//we use MVC architecture to solve this problem
+//Model View Controller architecture
+
+
+//CODE ON DEMAND 
+//whenever we need to add a new feature
+//we can just add a new file and import it in the index.js file
+
+
+//there is a driver between the server and the db 
+//mongoose -> validating the data 
+

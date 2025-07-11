@@ -118,3 +118,129 @@ Nodemon
 
 
 npm i nodemon
+
+
+
+Middleware 
+
+
+Middleware is a function that have the access to req and res objects and gets
+executes in the middle of the request recieving event and response sending event
+
+
+req-> middleware1 -> middleware2->middleware3-> res 
+
+a middleware is a function that gets executed in between the route handling and
+calls the next middleware after execution 
+
+middlewares are used for :
+
+-> execute any code before sending response
+-> modify request and response objects 
+-> end the request response cycle 
+-> call the next middleware function 
+
+
+-> security
+-> monitoring 
+-> file compatability
+-> other uses modularity
+
+
+next()-> this is the function that is called when a middleware has completed its execution and calls the next middleware 
+
+TYPES OF Middleware
+
+1. Application level middleware 
+
+used between the routes 
+
+req-> middleware -> res 
+
+
+Custom middleware 
+
+app.use((req, res, next)=>{
+    //write the middleware logic
+})
+
+2. Router Level Middleware 
+
+MVC Architecture 
+
+
+express router is a router level middleware thats helps us in implementing routes from a different module 
+
+3. Error handling middleware (optional)
+
+chances of error are there -> handle these errors by writing try and catch blocks
+
+
+
+4. Built in middlewares 
+
+i want to send and recieve json files 
+
+app.use(express.json())
+
+express.json()-> prebuilt middleware provided by express 
+express.static()-> serving static filed
+express.urlencoded()-> parsing the url encoded files 
+
+5. third party 
+
+these help us in implemneting specific uses 
+
+//morgan -> implementing logging 
+
+
+Applications of Middleware 
+
+1. Logging 
+2. Authorization 
+3. File parsing
+
+
+MVC Architecture
+
+
+Model View Controller 
+
+it makes our code efficient by making it modular 
+
+
+Best practices while using express
+
+1. use proper error handling
+        a. try{} catch(err){} in the routes handler function
+        b. custom error handler middleware
+
+2. MVC Architecture -> enables modular code implementation
+
+3. logging -> to monitor what requests are coming to our server 
+
+4. proper security using middlewares 
+
+
+
+Rate Limiting 
+
+you limit the number of requetes that come from a certain client 
+
+
+DoS -> Denial of Service 
+
+
+
+
+Database 
+
+MongoDB -> set up mongodb, deploy db, connect 
+
+install mongo client in your pc 
+
+https://www.mongodb.com/try/download/community
+
+it will ask you to download mongoDB Compass !!!!!! please install this!!!!
+
+Data Validation 
