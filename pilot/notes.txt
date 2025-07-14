@@ -244,3 +244,108 @@ https://www.mongodb.com/try/download/community
 it will ask you to download mongoDB Compass !!!!!! please install this!!!!
 
 Data Validation 
+
+
+
+DATABASES
+
+the cloud services that provide use with storing, reading, updating, and deleting the data that out business is based upon
+
+Types:
+
+1. relational
+2. non relational
+
+
+
+                            relational                  non relational
+
+1. Data structure           rows and columns            documents -> key value pairs
+2. Schema                   Strictly Fixed/predefined   Flexible Schema 
+3. Scalability              vertical scaling            horizontal scalability 
+4. Query Language           SQL (Structured             javascript  
+                            Query Language) 
+
+
+Vertical Scalability  increase the capacity of already existing table or database 
+Horizontal Scalability when we create replicas or multiple copies of the database 
+
+structure, vertical scaling 
+
+database search-> more the data slower the search 
+
+
+MongoDB -> Non relational database 
+
+if we dont have a fixed schema, our business might face problems 
+
+
+Data Validation 
+
+on the server 
+formats, limits, required, type 
+
+
+MongoDB 
+
+document oriented noSQL database 
+
+Features -> 
+1. JSON like documents - gives us high compatability with javascript
+2. Object oriented Querying -> movement of information will also be in objects -> 
+no need of any data conversion, data processing
+3. Supports multi dimensional data 
+4. Horizontal scaling through sharding 
+5. Flexible Schema -> we can modify the structure without any downtime 
+
+
+{
+    name:
+    addresses:[
+        { name:address 1,
+        house no. 1
+        city:delhi
+        country india
+        pincode 10099930
+
+        },
+        {
+
+        }
+    ]
+}
+
+
+
+
+Validation 
+
+
+UserManagement API 
+
+
+SQL database -> fixed schema 
+
+DB 1 -> migrate -> DB2 
+
+
+name, age, address -> phone number 
+
+
+
+-> Cluster = physical source where our databases are stored 
+
+Ecommerce 
+
+product info -> product collection
+user info  -> user collection
+orders info 
+cart info 
+review info 
+
+
+Cluster -> 
+Database (buyanything ecommerce)
+Collection is the entity that stores same type of data like tables but there is no predefined schema 
+Documents - single data entities 
+
