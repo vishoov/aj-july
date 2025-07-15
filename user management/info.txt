@@ -4,3 +4,72 @@ mongo user pass pzihf9jAD7ApmWnJ
 MONGOOSE -> IS A ODM SOFTWARE 
 
 OBJECT DATA MODELLING AND THIS ALSO HELPS US IN CONNECTING THE DATABASE TO OUR PROJECT 
+
+we model the data or we validate the data so that without having a predefined schema, we can
+keep our data uniform, consistent and we can preserve the data integrity
+
+user 
+
+name
+age
+phone
+email
+password 
+
+
+
+
+amazon -> where we will be storing the products 
+
+create a product schema 
+
+Basic Information
+name: Product name (required, 3-100 characters, trimmed)
+description: Product description (required, 10-1000 characters, trimmed)
+category: Product category (required, from predefined list) -> [electronics, household, fashion]
+brand: Brand name (optional, 2-50 characters if provided) 
+sku: Stock Keeping Unit (required, unique, alphanumeric, 6-20 characters)
+
+const productSchema = new mongoose.Schema({
+    name:{
+        type:String,
+        required:true,
+        minLength:3,
+        maxLength:100,
+        trim:true
+    },
+    description:{
+        type:String,
+        minLength:10,
+        maxLength:1000,
+        trim:true
+    },
+    category:{
+        type:String,
+        required:true,
+        enum:['electronics', 'household', 'fashion'],
+        default:"electronics"
+    },
+    brand:{
+        type:String,
+        required:false,
+        minLength:2,
+        maxLength:50
+    },
+    sku:{
+        type:String,
+        required:true,
+        unique:true,
+        minLength:6,
+        maxLength:20
+    }
+})
+
+
+API -> Modelling -> Query -> DB 
+
+
+
+for regular expressions 
+
+you can visit https://regex101.com/

@@ -1,0 +1,304 @@
+const mongoose = require('mongoose');
+const bcrypt = require('bcryptjs');
+
+const userSchema = new mongoose.Schema({
+  // Basic Information
+  firstName: {
+    type: String,
+    required: [true, 'First name is required'],
+    trim: true,
+    minlength: [2, 'First name must be at least 2 characters'],
+    maxlength: [50, 'First name cannot exceed 50 characters'],
+    validate: {
+      validator: function(value) {
+        return /^[a-zA-Z\s'-]+$/.test(value);
+      },
+      message: 'First name can only contain letters, spaces, hyphens, and apostrophes'
+    }
+  },
+  
+  lastName: {
+    type: String,
+    required: [true, 'Last name is required'],
+    trim: true,
+    minlength: [2, 'Last name must be at least 2 characters'],
+    maxlength: [50, 'Last name cannot exceed 50 characters'],
+    validate: {
+      validator: function(value) {
+        return /^[a-zA-Z\s'-]+$/.test(value);
+      },
+      message: 'Last name can only contain letters, spaces, hyphens, and apostrophes'
+    }
+  },
+  
+  username: {
+    type: String,
+    required: [true, 'Username is required'],
+    unique: true,
+    trim: true,
+    minlength: [3, 'Username must be at least 3 characters'],
+    maxlength: [20, 'Username cannot exceed 20 characters'],
+    validate: {
+      validator: function(value) {
+        return /^[a-zA-Z0-9_]+$/.test(value);
+      },
+      message: 'Username can only contain letters, numbers, and underscores'
+    }
+  },
+  
+  email: {
+    type: String,
+    required: [true, 'Email is required'],
+    unique: true,
+    trim: true,
+    lowercase: true,
+    validate: {
+      validator: function(value) {
+        return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(value);
+      },
+      message: 'Please provide a valid email address'
+    }
+  },
+  
+  // Authentication
+  password: {
+    type: String,
+    required: [true, 'Password is required'],
+    minlength: [8, 'Password must be at least 8 characters'],
+    validate: {
+      validator: function(value) {
+        return /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]/.test(value);
+      },
+      message: 'Password must contain at least one uppercase letter, one lowercase letter, one number, and one special character'
+    }
+  },
+  
+  // Profile Information
+  dateOfBirth: {
+    type: Date,
+    validate: {
+      validator: function(value) {
+        const today = new Date();
+        const age = today.getFullYear() - value.getFullYear();
+        return age >= 13 && age <= 120;
+      },
+      message: 'Age must be between 13 and 120 years'
+    }
+  },
+  
+  phoneNumber: {
+    type: String,
+    trim: true,
+    validate: {
+      validator: function(value) {
+        return !value || /^\+?[\d\s-()]{10,15}$/.test(value);
+      },
+      message: 'Please provide a valid phone number'
+    }
+  },
+  
+  // Address Information
+  address: {
+    street: {
+      type: String,
+      trim: true,
+      maxlength: [100, 'Street address cannot exceed 100 characters']
+    },
+    city: {
+      type: String,
+      trim: true,
+      maxlength: [50, 'City name cannot exceed 50 characters'],
+      validate: {
+        validator: function(value) {
+          return !value || /^[a-zA-Z\s'-]+$/.test(value);
+        },
+        message: 'City name can only contain letters, spaces, hyphens, and apostrophes'
+      }
+    },
+    state: {
+      type: String,
+      trim: true,
+      maxlength: [50, 'State name cannot exceed 50 characters']
+    },
+    zipCode: {
+      type: String,
+      trim: true,
+      validate: {
+        validator: function(value) {
+          return !value || /^\d{5}(-\d{4})?$/.test(value);
+        },
+        message: 'Please provide a valid ZIP code'
+      }
+    },
+    country: {
+      type: String,
+      trim: true,
+      maxlength: [50, 'Country name cannot exceed 50 characters']
+    }
+  },
+  
+  // Account Status
+  isActive: {
+    type: Boolean,
+    default: true
+  },
+  
+  isEmailVerified: {
+    type: Boolean,
+    default: false
+  },
+  
+  role: {
+    type: String,
+    enum: {
+      values: ['user', 'admin', 'moderator', 'super_admin'],
+      message: 'Role must be one of: user, admin, moderator, super_admin'
+    },
+    default: 'user'
+  },
+  
+  // Security Fields
+  lastLogin: {
+    type: Date
+  },
+  
+  failedLoginAttempts: {
+    type: Number,
+    default: 0,
+    min: [0, 'Failed login attempts cannot be negative']
+  },
+  
+  accountLockedUntil: {
+    type: Date
+  },
+  
+  passwordResetToken: {
+    type: String
+  },
+  
+  passwordResetExpires: {
+    type: Date
+  },
+  
+  emailVerificationToken: {
+    type: String
+  },
+  
+  emailVerificationExpires: {
+    type: Date
+  },
+  
+  // Preference Settings
+  preferences: {
+    newsletter: {
+      type: Boolean,
+      default: false
+    },
+    notifications: {
+      email: {
+        type: Boolean,
+        default: true
+      },
+      sms: {
+        type: Boolean,
+        default: false
+      },
+      push: {
+        type: Boolean,
+        default: true
+      }
+    },
+    theme: {
+      type: String,
+      enum: ['light', 'dark', 'auto'],
+      default: 'auto'
+    },
+    language: {
+      type: String,
+      default: 'en',
+      validate: {
+        validator: function(value) {
+          return /^[a-z]{2}(-[A-Z]{2})?$/.test(value);
+        },
+        message: 'Language must be in ISO 639-1 format (e.g., en, en-US)'
+      }
+    }
+  },
+  
+  // Profile Picture
+  profilePicture: {
+    type: String,
+    validate: {
+      validator: function(value) {
+        return !value || /^https?:\/\/.+\.(jpg|jpeg|png|gif|webp)$/i.test(value);
+      },
+      message: 'Profile picture must be a valid image URL'
+    }
+  },
+  
+  // Social Media Links
+  socialLinks: {
+    twitter: {
+      type: String,
+      validate: {
+        validator: function(value) {
+          return !value || /^https?:\/\/(www\.)?twitter\.com\/[a-zA-Z0-9_]+$/.test(value);
+        },
+        message: 'Please provide a valid Twitter URL'
+      }
+    },
+    linkedin: {
+      type: String,
+      validate: {
+        validator: function(value) {
+          return !value || /^https?:\/\/(www\.)?linkedin\.com\/in\/[a-zA-Z0-9-]+$/.test(value);
+        },
+        message: 'Please provide a valid LinkedIn URL'
+      }
+    },
+    github: {
+      type: String,
+      validate: {
+        validator: function(value) {
+          return !value || /^https?:\/\/(www\.)?github\.com\/[a-zA-Z0-9-]+$/.test(value);
+        },
+        message: 'Please provide a valid GitHub URL'
+      }
+    }
+  },
+  
+  // Two-Factor Authentication
+  twoFactorAuth: {
+    enabled: {
+      type: Boolean,
+      default: false
+    },
+    secret: {
+      type: String
+    },
+    backupCodes: [{
+      type: String
+    }]
+  },
+  
+  // Audit Fields
+  createdAt: {
+    type: Date,
+    default: Date.now
+  },
+  
+  updatedAt: {
+    type: Date,
+    default: Date.now
+  },
+  
+  createdBy: {
+    type: mongoose.Schema.Types.ObjectId,
+    ref: 'User'
+  },
+  
+  updatedBy: {
+    type: mongoose.Schema.Types.ObjectId,
+    ref: 'User'
+  }
+});

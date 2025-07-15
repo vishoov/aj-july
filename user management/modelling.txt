@@ -1,0 +1,107 @@
+Model -> Mongoose 
+
+we need to ensure data integrity -> uniform -> clean 
+
+
+mongoose validation 
+
+Validators-> these help us in checking the conditions that the data has to follow 
+
+Built-In Validators
+
+1. type Validators
+    type: String/Number/Boolean/Date/Array/ 
+
+    collection reference -> connect one collection to another 
+
+    ecommerce website
+
+    users
+    product
+    reviews -> user, product 
+    orders
+
+
+    type:mongoose.Schema.Types.ObjectId-> include a users or a product's ID in some other field 
+
+    //ecommerce 
+
+
+2. required - true or false 
+3. min and max -> type:Number
+
+age-> age>18 and age <100
+
+movie ticker -> A -> age> 18
+
+
+STRING VALIDATOR 
+4. minLength and maxLength -> 
+
+password-> 10 characters long 
+
+minLength:10
+
+5.enum Validator -> used to allow fixed amount of possible values that can be used in a certain key
+
+
+role -> user, admin, superadmin 
+
+6. match -> implement regular expression 
+
+    match:[/^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/, "The email is not in the correct format"]
+
+
+7. Unique Option -> if a certain value needs to be unique -> no duplicate is allowed
+
+email-> if an email is already occupied no other user can use it 
+
+
+
+
+Built in Modifier
+
+trim  -> remove the spaces
+lowercase  -> convert the string in to lowercase
+
+
+Custom Validators 
+
+validate:{
+    //         validator: function(v){
+    //             return /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/.test(v);
+    //             //RegEx -> this is a regular expression that checks if the email is in the correct format
+    //             //regex is used to match patterns in strings 
+    //             //name@povider.com
+
+    //         },
+    //         message:"The email is not in the correct format"
+    // }
+
+let us define functions to validate the data 
+
+function -> validator function -> inputting the value 
+Object -> validate:{
+    validator:function
+}
+
+{
+    validator,
+    message 
+}
+
+//you want to validate a certain information in multiple stages
+// Multiple validators
+password: {
+  type: String,
+  validate: [
+    {
+      validator: function(v) { return v.length >= 8; },
+      message: 'Password must be at least 8 characters'
+    },
+    {
+      validator: function(v) { return /[A-Z]/.test(v); },
+      message: 'Password must contain uppercase letter'
+    }
+  ]
+}
