@@ -1,0 +1,95 @@
+Detailed notes of types of queries in mongoose and their implementation
+
+Note: Every database interaction has to go through mongoose (Model that we have defined)
+so that by default validation, condition checking -> applied !! 
+
+ANY STANDARD OPERATION WILL HAVE THE SYNTAX 
+
+ query -> model.CRUD({condition or the data })
+
+Note: we have to use async await with every query because the db is a external resource as compared from the server and it required asynchronous code execution to prevent it from throwing any error 
+
+
+1. CRUD Operations 
+
+CREATE 
+
+
+1. await Model.create({data})
+2. const data = new Model({data}); await data.save();
+
+
+
+2. READ -> retrieves the documents from the collections 
+
+a. Model.find({query or condition }) -> array of all the documents that follow the condition
+b. Model.findOne({query or condition}) -> returns the first document that follows the condition 
+
+
+Conditions 
+
+1. Value Matching 
+
+    name :"xyz"
+    or 
+    age:20
+
+    Ex. User.find({name:"Vishoo"})
+
+2. Comparison Operators 
+
+*    >  => greater than => $gt  -- Ex. User.find({age: { $gt: 20 } })
+*    < -> less tha => $lt -- Ex. User.find({age:{$lt:70}})
+*    >= -> $gte
+*    <= -> $lte
+*    != -> $ne
+*    == -> $eq
+*    in Array -> [72, 68, 20]  -> $in -> in Array 
+*      $nin -> not in array  -> [72, 20, 80]
+
+
+
+
+2. Logical Operators -> whenever we have to check multiple conditions 
+
+AND -> age:72 AND email:"abc@gmail.com" ->
+ex. User.find({
+    $and : [
+        {
+            age:{$gte:18}
+        },
+        {
+            name:"Vishoo"
+        }
+    ]
+})
+
+
+
+OR -> $or
+NOT -> $not
+NOR -> $nor
+
+
+3. Element Operators
+
+these help us in identifying document on field characterics -> exists, types
+
+I want to find users whos age exists 
+
+ex Users.find({
+    age : {
+        $exists :true
+    }
+})
+
+If you want to check the type of certain infrmation 
+
+User.find({
+    age:{
+        $type : "Number"
+    }
+})
+
+
+https://www.mongodb.com/docs/manual/core/aggregation-pipeline/

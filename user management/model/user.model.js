@@ -39,6 +39,12 @@ const userSchema = new mongoose.Schema({
         maxLength:[20, "Password must be at most 20 characters long"],
         // select:false //this means that the password will not be returned when the user is fetched from the db
     },
+    age:{
+        type:Number,
+        required:[true, "Age is required to signup"],
+        min:[0, "You must be at least 0 years old to signup"], //this makes sure that the user is at least 18 years old
+        max:[100, "You must be less than 100 years old to signup"] //this makes sure that the user is less than 100 years old
+    },
     role:{
         type:String,
         //role can be one of the following: user, admin, superadmin
