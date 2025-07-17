@@ -1,0 +1,97 @@
+Aggregation pipelines consists of one or more stages that process documents sequentially (one after another)
+Each stage performs a specific operation on the input documents
+group->filtering->projecting
+and then passes the output data to next stage
+
+The pipeline approach allows us to break down complex queries into manageable sequential Operations
+
+USP:
+1. sequential implementation -> one after another 
+2. Document Transformation - stages can filter, group, reshape, modify documents
+3. performance optimization -> database level implementation 
+
+find() -> data -> server filter 
+
+4. Flexible coposition -> whatever stages i have i can combine them in any manner 
+
+grouping filter 
+filter group
+
+syntax of aggregation
+
+app.get("/analytics", async (req, res)=>{
+    try{
+        const result = await User.aggregate(
+            [
+                //implement multiple stages of aggregation 
+                //inputs an array of objects 
+                //where each object is an aggregation stage 
+                //these will be implemented sequentially 
+            ]
+        )
+    }
+    catch(err){
+        res.send(err.message)
+    }
+})
+
+Core Aggregation Stages 
+
+1. $match stage - filter the documents based on specific criteria (equivalent to find() query)
+
+
+//find the users whos age is greater than 18 and their role is user 
+
+const result = await User.aggregate(
+    [
+        {
+            $match:{
+                $and:[
+                    {
+                        age:{$gte:18}
+                    },
+                    {
+                        role:"user"
+                    }
+                ]
+            }
+        }
+    ]
+)
+
+
+//find the users who have a valid age stored in the database 
+
+//their age should be less than 50 
+
+2. $group: groups the documents by spcecified fields and performs aggregation operation
+
+i want to group the users by role 
+
+user
+admin
+superadmin
+
+
+//want to group users based on role -> user admin superadmin
+//return the count of each category as well
+
+
+
+
+3. Project -> reshape documents by inlcuding, excluding or transforming fields 
+
+we are deciding how do we want to display the data 
+
+$project:{
+    name:1
+    age:1
+    email:1
+    role:0
+    password:0
+    category:"$role"
+}
+
+$sort -> sorts the data on some value 
+$limit -> we can limit the number of data that is being sent to us 
+$skip -> skips starting n objects 

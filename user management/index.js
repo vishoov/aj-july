@@ -72,11 +72,7 @@ app.post("/signup", async (req, res)=>{
 app.get("/users", async (req, res)=>{
     try{
         
-        const users = await User.find({
-          age:{
-            $type: "number" //this checks if the age field is a number
-          }
-        });
+        const users = await User.find({});
         res.status(200).json({
             message: "Users fetched successfully",
             users: users
@@ -138,12 +134,273 @@ app.post("/login", async (req, res)=>{
 
 
 //to delete the user 
+app.delete("/deleteUser", async (req, res)=>{
+    try{
+        const email = req.body.email;
+
+        const deletedUser = await User.deleteOne({
+            email
+        })
+        console.log(deletedUser)
+
+        if(deletedUser.deletedCount===0){
+            res.send("Nothing deleted")
+        }
+
+        res.status(200).json({
+            message:"User deleted successfuly",
+            user:deletedUser
+        })
+    }
+    catch(err){
+        res.status(500).send(err.message)
+    }
+})
+
+
+app.put("/updateUser", async (req, res) => {
+    try {
+        const name = req.body.name;
+        const new_email = req.body.new_email;
+
+        // Input validation
+        if (!name || !new_email) {
+            return res.status(400).json({ error: "Name and new_email are required" });
+        }
+
+        // const result = await User.updateOne(
+        //     { name: name }, //filter
+        //     { $set: { email: new_email } }, //update values
+        //     { 
+        //         runValidators: true  //options
+        //     }
+        // );
+
+        // if (result.matchedCount === 0) {
+        //     return res.status(404).json({ error: "User not found" });
+        // }
+
+        // if (result.modifiedCount === 0) {
+        //     return res.status(200).json({ message: "No changes made - email might be the same" });
+        // }
+
+            //------------------------------findOneAndUpdate()------------------------
+            const updatedUser = await  User.findOneAndUpdate(
+                {
+                    name:name
+                },
+                {
+                    $set:{
+                        email:new_email
+                    }
+                },
+                {
+                    new:true,
+                    runValidators:true
+                }
+            )
+
+            if(!updatedUser){
+                return res.status(400).send("Nothing updated")
+            }
 
 
 
-//to update the user information
+
+        res.status(200).json({ 
+            message: "User updated successfully",
+          
+            updatedUser:updatedUser
+        });
+
+    } catch (err) {
+        console.error("Update error:", err);
+        res.status(500).json({ error: err.message });
+    }
+});
+
+app.put("/updateMany", async (req, res)=>{
+    try{
+            const name = req.body.name;
+            const updatedName = req.body.new_name;
+
+            const result = await User.updateMany(
+                {
+                    name:name
+                },
+                {
+                    $set:{
+                        name:updatedName
+                    }
+                },{
+                    runValidators:true
+                }
+            )
+
+            if (result.matchedCount === 0) {
+                return res.status(404).json({ error: "User not found" });
+            }
+    
+            if (result.modifiedCount === 0) {
+                return res.status(200).json({ message: "No changes made - email might be the same" });
+            }
+    
+            res.status(200).json({ 
+                message: "Users updated successfully",
+                matchedCount: result.matchedCount,
+                modifiedCount: result.modifiedCount,
+
+            });
 
 
+    }
+    catch(err){
+        res.status(500).send(err.message)
+    }
+})
+
+app.put("/updateById/:id", async (req, res)=>{
+    try{
+        const id = req.params.id;
+        const {email, password}=req.body;
+
+        const updatedUser = await User.findByIdAndUpdate(
+            id,
+            {
+                $set:{
+                    email:email,
+                    password:password
+                }
+            },
+            {
+                new:true,//deletes all the old data in the document and creates a new document altogether
+                runValidators:true
+            }
+        )
+
+        if(!updatedUser){
+            res.status(404).send("The product wasnt updated")
+        }
+
+        res.status(200).send({
+            message:"The user is updated successfully",
+            updatedUser
+        })
+
+    }
+    catch(err){
+        res.status(400).send(err.message)
+    }
+})
+
+app.get("/aggregate", async (req, res)=>{
+    try{
+        const result = await User.aggregate(
+            [
+                {
+                    $match:{
+                        $and:[
+                            {
+                                age:{
+                                    $gt:18
+                                }
+                            },
+                            {
+                                role:"user"
+                            }
+                        ]
+                    }
+                }
+            ]
+        )
+
+        res.status(200).json({
+            message:"Aggregation Done",
+            result:result
+        })
+
+    }
+    catch(err){
+        res.status(500).send(err.message)
+    }
+})
+
+app.get("/aggregate2", async (req, res)=>{
+    try{    
+            const result = await User.aggregate([
+                {
+                    $match:{
+                        $and:[
+                            {
+                                age:{
+                                    $exists:true
+                                }
+                            },
+                            {
+                                age:{
+                                    $lt:50
+                                }
+                            }
+                        ]
+                    }
+                }
+            ])
+
+            res.status(200).json({
+                result:result
+            })
+
+    }
+    catch(err){
+        res.send("Error")
+    }
+})
+
+app.get("/role_count", async (req, res)=>{
+    try{
+        const result = await User.aggregate([
+            {
+                $group:{
+                    //condition based on which the data will be grouped
+                    _id:"$role",
+                    count:{
+                        $sum:1
+                    }
+
+                }
+            },
+            {
+                $project:{
+                    _id:0,
+                    role:"$_id",
+                    User_Count:"$count"
+                }
+            },
+            {
+                $sort: {
+                    User_Count:-1
+                    //1 means ascending 
+                    //-1 means descending
+                }
+            },
+            {
+                $skip:1
+            },
+            {
+                $limit:2
+            }
+        ])
+
+        res.json({
+            result:result
+        })
+    }
+    catch(err){
+        res.status(500).json({
+            message:"Error"
+        })
+    }
+})
 
 
 

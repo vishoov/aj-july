@@ -93,3 +93,64 @@ User.find({
 
 
 https://www.mongodb.com/docs/manual/core/aggregation-pipeline/
+
+
+3. Update queries
+
+updateOne -> {name :Vishoo} -> write results 
+
+updateMany
+
+
+//updateOne(filter-> update -> options -> callback)
+
+1. filter the user -> name:elon -> filter= $set:{ email : "john@gmail.com"}
+
+
+updateOne(
+    {filter},
+    {updatedValue},
+    {options}
+)
+
+
+
+2. updateMany()  -> account status-> active -> inactive 
+
+User.updateMany({
+    filter
+},
+{
+    updateValue
+},
+{
+
+})
+
+
+mongoDB 
+updateOne() -> update the first matching document based on the filter - returns the write result 
+updateMany()-> updates all matching documents based on the filter - returns the write result
+
+ "acknowledged": true,
+        "modifiedCount": 1,
+        "upsertedId": null,
+        "upsertedCount": 0,
+        "matchedCount": 1
+
+
+mongoose specific only
+findOneAndUpdate() -> finds and updates a single document 
+findByIdAndUpdate() -> specifically for those cases when we hve to find users through their id 
+
+
+Delete Queries 
+
+
+deleteOne() -> return the counts of mtched and deleted documents
+deleteMany() -> returns the counts
+
+
+
+findOneandDelete() -> it returns the deleted documents
+findByIdAndDelete() -> it returns the deleted document s
