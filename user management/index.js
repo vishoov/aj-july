@@ -2,10 +2,12 @@ const express = require("express");
 const app = express();
 const mongoose = require("mongoose");
 const User = require("./model/user.model.js");
-
+const multer = require("multer");
 const uri = "mongodb+srv://vverma971:pzihf9jAD7ApmWnJ@cluster0.ifbbpdv.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0"
 
 app.use(express.json()); //this middleware is used to parse the incoming request body as JSON
+
+
 
 
 mongoose.connect(uri)
@@ -17,8 +19,137 @@ mongoose.connect(uri)
     })
 
 
+//Set the destination for file uploads
+// const storage = multer.diskStorage({
+//     destination: function (req, file, cb) {
+//         cb(null, "uploads/"); //specify the directory where files will be stored
+//     }
+// })
 
 
+//1. Set the storage engine for multer
+// multer.diskStorage() is used to set the storage engine for multer
+// It allows you to specify the destination directory and the filename for the uploaded files.
+// The storage engine can be configured to store files on disk or in memory.
+
+//resume ranking system -> we can store the files in memory 
+//saving the files in memory will be useful when we want to process the files immediately after uploading them
+
+//parsing the pdf -> memory storage is useful
+
+
+//set up the storage engine
+
+const storage = multer.diskStorage({
+    destination: function (req, file, cb) {
+        cb(null, "uploads/"); // specify the directory where files will be stored
+    },
+    filename: function (req, file, cb) { // Note: it's 'filename', not 'fileName'
+        // modify the file name if needed
+        const fileName = Date.now().toString() + "-" + file.originalname; // appending timestamp to the original file name
+        cb(null, fileName); // set the modified file name
+    }
+});
+
+
+//2. Create the multer instance with the storage engine and file size limit
+//this is also a file Validation step 
+//defining the file size limit and file type validation
+const upload = multer({ 
+    storage: storage,
+    limits: {
+        fileSize: 1024 * 1024 * 10 // Maximum file size of 5MB
+    },
+    fileFilter: (req, file, cb) => {
+        // only allowing image files
+        if (file.mimetype.startsWith("image/") || file.mimetype === "application/pdf") { // allowing pdf files as well
+            cb(null, true); // accept the file
+        } else {
+            cb(new Error("Only image files are allowed"), false); // reject the file
+        }
+    }
+});
+
+
+
+//Route to handle file upload
+// Route to handle file upload
+app.post("/upload", upload.single("Acciojob"), async (req, res) => {
+    try {
+        if (!req.file) {
+            return res.status(400).json({ message: "No file uploaded" });
+        }
+
+        // req.file contains information about the uploaded file
+        const filePath = req.file.path; // path to the uploaded file
+        const fileName = req.file.filename; // name of the uploaded file
+        const fileSize = req.file.size; // size of the uploaded file
+
+        // You can save the file information to the database if needed
+        res.status(200).json({
+            message: "File uploaded successfully",
+            file: {
+                name: fileName,
+                path: filePath,
+                size: fileSize,
+                mimetype: req.file.mimetype // file type
+            }
+        });
+
+    } catch (err) {
+        console.error("Error during file upload:", err);
+        res.status(500).json({ error: err.message });
+    }
+});
+
+//Route to handle multiple file uploads
+app.post("/uploadMultipleFiles", upload.array("Acciojob", 5), async (req, res) => {
+    try {
+        if (!req.files || req.files.length === 0) {
+            return res.status(400).json({ message: "No files uploaded" });
+        }
+        // req.files contains an array of uploaded files
+        res.status(200).json({
+            message: "Files uploaded successfully",
+            files: req.files.map(file => ({
+                name: file.filename, // name of the uploaded file   
+                destination: file.destination, // directory where the file is stored
+                size: file.size, // size of the uploaded file
+                mimetype: file.mimetype // file type
+            }))
+        });
+    } catch (err) {
+        console.error("Error during multiple file upload:", err);
+        res.status(500).json({ error: err.message });
+    }
+});
+
+
+app.post("/uploadPDF", upload.single("Acciojob"), async (req, res)=>{
+    try{
+        if(!req.file){
+            return res.status(400).json({ message: "No file uploaded" });
+        }
+
+const filePath = req.file.path; // path to the uploaded file
+const fileName = req.file.filename; // name of the uploaded file
+const fileSize = req.file.size; // size of the uploaded file
+
+res.status(200).json({
+    message: "PDF uploaded successfully",
+    file: {
+        name: fileName, 
+        path: filePath,
+        size: fileSize,
+        mimetype: req.file.mimetype // file type
+    }
+    })
+}
+    catch(err){
+        console.error("Error during PDF upload:", err);
+        res.status(500).json({ error: err.message });
+    }
+})
 
 
 app.get("/", (req, res)=>{

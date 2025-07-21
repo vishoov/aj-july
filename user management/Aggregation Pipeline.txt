@@ -1,4 +1,9 @@
 Aggregation pipelines consists of one or more stages that process documents sequentially (one after another)
+
+database===1===2====3====4=====5====6===insight
+
+NOTE!!!!!! -> Aggregation Pipelines DO NOT affect the data present in the database 
+
 Each stage performs a specific operation on the input documents
 group->filtering->projecting
 and then passes the output data to next stage
@@ -7,12 +12,12 @@ The pipeline approach allows us to break down complex queries into manageable se
 
 USP:
 1. sequential implementation -> one after another 
-2. Document Transformation - stages can filter, group, reshape, modify documents
+2. Document Transformation - stages can filter, group, reshape, modify the output
 3. performance optimization -> database level implementation 
 
 find() -> data -> server filter 
 
-4. Flexible coposition -> whatever stages i have i can combine them in any manner 
+4. Flexible composition -> whatever stages i have i can combine them in any manner 
 
 grouping filter 
 filter group
@@ -60,9 +65,11 @@ const result = await User.aggregate(
 )
 
 
-//find the users who have a valid age stored in the database 
+//A. find the users who have a valid age stored in the database 
 
-//their age should be less than 50 
+
+
+//B. Find users whos age should be less than 50 
 
 2. $group: groups the documents by spcecified fields and performs aggregation operation
 
@@ -71,6 +78,16 @@ i want to group the users by role
 user
 admin
 superadmin
+
+{
+    "user":count
+},
+{
+    "admin":count
+},
+{
+    "superadmin":count
+}
 
 
 //want to group users based on role -> user admin superadmin

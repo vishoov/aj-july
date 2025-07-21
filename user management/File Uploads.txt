@@ -1,0 +1,51 @@
+MULTER
+
+
+multer is a node.js middleware that helps us in uploading files to the server
+
+Extra : this is built on busboy  -> to parse HTML data 
+
+express.json() -> parse JSON
+
+
+
+
+npm i multer 
+
+
+RESTFUL -> keep the server as light as possible 
+
+the more computation power we have -> the more users we can handle from the server 
+
+
+1. import multer
+
+2. Configure multer -> destination, default file names 
+    DISK STORAGE CONFIGURATION
+
+
+    1. Destination -> where the files need to be uploaded
+    2. limits -> size limits Max allowed size
+    3. FileType -> only allow certain types of files 
+    4. FileNAme -> modify each file's name when uploading, suffix prefix 
+
+to access the uploaded file -> req.file
+
+
+req object that is provided to us by express 
+
+req.body-> contains the text inputs from the forms -> json body
+req.headers-> headers -> headers(technical details)
+req.file -> single file 
+req.files-> contains an ARRAY of uploaded files (in case of multiple uploads)
+
+
+
+file object properties
+
+fieldName: upload.single(fieldName), upload.array(fieldName)
+originalName: original name of the file uploaded 
+filename: generated file name in the directory
+path: path to where the file is stored
+size: size of the file 
+mimetype: MIME type of the file -> image, audio, video, pdf 
