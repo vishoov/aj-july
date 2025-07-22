@@ -1,4 +1,5 @@
 //we'll be using user data to build our application
+const bcrypt = require('bcrypt');
 
 const mongoose = require('mongoose');
 
@@ -56,6 +57,39 @@ const userSchema = new mongoose.Schema({
     }
 
 })
+
+//bcrypt password hashing or password encryption
+//we need to define a middleware that works between the user creation and the user saving to the database
+//this middleware will hash the password before saving the user to the database
+userSchema.pre('save', async function(next){
+    try{
+        //first we check if the password is modified or not
+        if(!this.isModified('password')) return next();
+
+        //if the password is modified, we hash the password
+        const salt = await bcrypt.genSalt(10); //this generates a salt with 10 rounds
+        // const salt = "$2b$10$eImiTMZG4T5xW7jZ6k9aOe"; //this is a hardcoded salt for demonstration purposes, in production you should generate a new salt every time
+
+        this.password = await bcrypt.hash(this.password, salt);
+        //this hashes the password using the salt
+
+        next(); //this calls the next middleware in the chain
+    }
+    catch(err){
+        next(err); //if there is an error, we pass it to the next middleware
+    }
+})
+
+//we will define a method to compare the password entered by the user with the hashed password in the database
+userSchema.methods.comparePassword = async function(userPassword){
+    try{
+        //i will match the password entered by the user with the hashed password in the database using bcrypt's compare method
+        return await bcrypt.compare(userPassword, this.password)
+    }
+    catch(err){
+        throw new Error(err); //if there is an error, we throw it
+    }
+}
 
 const User = mongoose.model("User", userSchema) //this creates a model called User using the userSchema
 

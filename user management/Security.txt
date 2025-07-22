@@ -1,0 +1,38 @@
+Sceurity Threats
+
+
+1. XSS
+2. DB Injection Attacks
+3. DDoS Attacks
+4. Insecure databases
+5. Server Security 
+6. Broken Authentication
+
+
+Security Best Practices 
+
+1. Encryption -> encrypt any sensitive information, so that even if the database is compromised, the information is still secure
+
+password ->9fgogf80te08pib;kfbidg08t08g
+
+BCrypt -> npm i bcrypt
+
+signup / login ->  encrypt   -> DB 
+
+
+2. Rate Limiting 
+
+Prevents DDoS Attack -> limit the number of requests that you allow the server to respond to in a given frame of time
+
+npm i express-rate-limiter
+
+
+3. Monitoring or logging 
+
+help us create a record of the requests that we have recieved on our server and then we can have a record of these requests
+
+
+if our server crashes so we can identify which was the last request that we received before the server crashed
+
+
+4. API Authentication

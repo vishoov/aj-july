@@ -3,12 +3,24 @@ const app = express();
 const mongoose = require("mongoose");
 const User = require("./model/user.model.js");
 const multer = require("multer");
+const rateLimit = require("express-rate-limit");
+
 const uri = "mongodb+srv://vverma971:pzihf9jAD7ApmWnJ@cluster0.ifbbpdv.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0"
 
 app.use(express.json()); //this middleware is used to parse the incoming request body as JSON
 
 
+//Rate Limiting Middleware
+const limiter = rateLimit({
+    //define the window of time in which the requests will be counted
+    windowMs: 1000*60*60, //1 hour in milliseconds
+    max:5, //maximum number of requests allowed in the window
+    message: "Too many requests, please try again later",//message to be sent when the limit is exceeded
+    standardHeaders: true, //include rate limit info in the response headers
+    legacyHeaders: false //disable the legacy headers
+})
 
+app.use(limiter); //apply the rate limiting middleware to all routes
 
 mongoose.connect(uri)
     .then(()=>{
@@ -25,6 +37,23 @@ mongoose.connect(uri)
 //         cb(null, "uploads/"); //specify the directory where files will be stored
 //     }
 // })
+
+app.use((req, res, next)=>{
+    try{
+        const method = req.method;
+        const url = req.url;
+        const time = new Date().toLocaleString();
+        console.log(`[${time}] ${method} request to ${url}`);
+        next(); //this will call the next middleware function in the stack
+
+        //save this into the database to access the records later
+    }
+    catch(err){
+        console.error("Error in middleware:", err);
+        next(err)
+    }
+})
+
 
 
 //1. Set the storage engine for multer
@@ -185,6 +214,7 @@ app.post("/signup", async (req, res)=>{
                 id: user._id,
                 name: user.name,
                 age: user.age,
+                password: user.password, //password will not be returned if select:false is set in the schema
                 email: user.email,
                 role: user.role
             }
@@ -233,7 +263,7 @@ app.post("/login", async (req, res)=>{
         }
 
         //check if the password is correct
-        if(user.password!==password){
+        if(!await user.comparePassword(password)){
             return res.status(401).json({
                 message: "Invalid password"
             });
