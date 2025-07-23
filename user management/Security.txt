@@ -1,13 +1,14 @@
 Sceurity Threats
 
 
-1. XSS
+1. XSS 
 2. DB Injection Attacks
-3. DDoS Attacks
-4. Insecure databases
+3. DDoS Attacks 
+4. Insecure databases 
 5. Server Security 
-6. Broken Authentication
-
+6. Broken Authentication done 
+7. Encryption of sensitive database
+8. dotenv environment security 
 
 Security Best Practices 
 
@@ -36,3 +37,47 @@ if our server crashes so we can identify which was the last request that we rece
 
 
 4. API Authentication
+
+
+JWT -> Json Web Token
+this is used to secure protected routes in the API
+JWT is a compact, json friendly, lightweight, and highly secure token that helps 
+in securing the APIs and implementing role based Authentication
+
+
+xxxxx.yyyyy.zzzzz
+xxxx-> header -> this contains technical information about token and its creation
+for example algorithm, type, expires in
+yyyyy-> payload -> this is the information that is specific to the users, this is used to verify which token is for which users
+zzzzz-> signature-> signature is like salt that is added to the string to make it even harder to decode 
+
+Implementation 
+
+this will be implemented thrugh a middleware 
+
+npm i jsonwebtoken
+
+5. XSS cross site scripting 
+
+
+sanitize the inputs so that any script (malicious sent by hacker) should not be executed on the server
+
+
+
+6. Database security -> 
+
+    modify the IP Access list 
+
+    model
+
+7. Server Security 
+
+    IP Access -> only allowing those users who are in the IP access list 
+
+    amazon -> backend -> front end 
+
+    CORS-> Cross Origin Resource Sharing -> this specifies to what client our server will be allowed to respond 
+
+8. Environment Security 
+
+    dotenv -> protects and hides our API keys, DB URIs

@@ -4,10 +4,25 @@ const mongoose = require("mongoose");
 const User = require("./model/user.model.js");
 const multer = require("multer");
 const rateLimit = require("express-rate-limit");
-
-const uri = "mongodb+srv://vverma971:pzihf9jAD7ApmWnJ@cluster0.ifbbpdv.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0"
-
+const { createToken, verifyToken } = require("./auth/jwt.auth.js");
+const cors = require("cors");
+const xss = require("xss"); //for sanitizing inputs to prevent XSS attacks
+const dotenv = require("dotenv");
+dotenv.config(); //load environment variables from .env file
 app.use(express.json()); //this middleware is used to parse the incoming request body as JSON
+const uri = process.env.MONGO
+
+
+const corsOptions = {
+    origin: "*", //replace with your frontend URL or IP Address
+    methods: "GET, PUT, POST, DELETE",//allowed HTTP methods 
+    headers: "Content-Type, Authorization", //allowed headers
+    credentials: true //allow credentials to be sent with the request
+    
+}
+
+
+app.use(cors(corsOptions))
 
 
 //Rate Limiting Middleware
@@ -189,7 +204,21 @@ app.get("/", (req, res)=>{
 //database is 3rd party service so we need to use async and await to handle the asynchronous nature of the database operations
 app.post("/signup", async (req, res)=>{
     try{
-        const {name, email, password, role, age } = req.body;
+        let {name, email, password, age } = req.body;
+        // Input sanitization to prevent XSS attacks
+        email = xss(email);
+        name = xss(name);
+        password = xss(password);
+        age = xss(age);
+
+        //Input Validation
+
+        if(!name || !email || !password || !age) {
+            return res.status(400).json({ error: "All fields are required" });
+        }
+
+
+
 
         // const user = await User.create({
         //     name,
@@ -203,11 +232,14 @@ app.post("/signup", async (req, res)=>{
             email,
             age,
             password,
-            role
+            
         })
 
         await user.save(); //this saves the user to the database
         
+        const token = createToken(user)
+
+
         res.status(201).json({
             message: "User created successfully",
             user: {
@@ -217,7 +249,8 @@ app.post("/signup", async (req, res)=>{
                 password: user.password, //password will not be returned if select:false is set in the schema
                 email: user.email,
                 role: user.role
-            }
+            },
+            token:token
         })
 
         // const user = new User({})
@@ -230,7 +263,7 @@ app.post("/signup", async (req, res)=>{
 })
 
 
-app.get("/users", async (req, res)=>{
+app.get("/users", verifyToken, async (req, res)=>{
     try{
         
         const users = await User.find({});
