@@ -1,0 +1,85 @@
+Server
+1. npm init -y to setup the Server
+2. create index.js
+3. customise the scripts
+4. npm i express nodemon socket.io
+5. set up the boiler plate -> import express, setup app, add a port listener
+6. import http -> const server = http.createServer(app) -> http handshake 
+7. npm i cors
+8. const socketIo = require("socket.io");
+9. const io = socketIo(httpServer, {CORS Configuration})
+10. io.on("connection", handlerfunction) -> recieving and managing the conenctions on my server 
+
+
+
+CORS-> Cross Origin Resource Sharing -> prerequisite for socket.io
+1. any unwanted request from any random client wont be allowed to access our server 
+2. whenever we are using cors -> it allows us to restrict what methods a user can access on our server -> GET, POST 
+
+Client
+
+1. we setup the react application using npm create vite@latest
+2. npm i socket.io-client -> this is the client side package for the socket.io
+3. import { io } from "socket.io-client"
+4. const socket = io("URL of the backend")
+5. useEffect to render a function on page load to recieve the connection
+6. socket.on("connect", ()=>consol.log("socket connect"))
+
+
+
+
+
+Lets build the functionality to send a message from client side to the server side
+
+1. build a form 
+2. handleSubmit functon -> sending the message using socket.emit("message", {})
+3. socket.emit -> sends the message to the WHOLE server  and WHEREVER we recieve this message, there it is accessible 
+4. socket.on("message", ()=>console.log(message)) -> parsed and printed 
+
+
+
+
+
+
+
+Server side is called io
+client side is called socket 
+
+
+
+socket.emit -> sends a message from a socket
+io.emit-> sends a message from the whole server 
+io.to(reciever).emit -> this helps us in sending the message a specific user 
+
+
+
+socket.io essentials!
+
+
+Server side methods 
+
+Server Setup 
+-http.createServer 
+- configured using cors
+- io.on("connection")
+
+
+Client 
+
+- const socket = io(server link)
+- useEffect - socket.on("connect")
+
+
+
+BroadCasting Methods 
+
+- io.emit -> emit a message to ALL THE CLIENT IN THE SERVER 
+- io.to(room).emit() -> sending a message to a specific user 
+- io.to().emit("forward") -> forwarding the message for the server to the client for whom it is meant
+- io.on("event") -> recieve any event 
+
+
+Joining Room 
+
+
+- socket.join(room)

@@ -1,10 +1,10 @@
 Sceurity Threats
 
 
-1. XSS 
+1. XSS -> cross site scripting 
 2. DB Injection Attacks
-3. DDoS Attacks 
-4. Insecure databases 
+3. DDoS Attacks -> Distributed Denial of Service  -> bottle neck of our server 
+4. Insecure databases -> information encryption and network access on the database
 5. Server Security 
 6. Broken Authentication done 
 7. Encryption of sensitive database

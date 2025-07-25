@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Multiple Image Upload</title>
+<style>
+    body {
+        font-family: Arial, sans-serif;
+        background-color: #f4f4f4;
+        margin: 0;
+        padding: 20px;
+    }
+    
+    h1 {
+        color: #333;
+    }
+    
+    form {
+        background-color: #fff;
+        padding: 20px;
+        border-radius: 5px;
+        box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+    }
+    
+    label {
+        display: block;
+        margin-bottom: 10px;
+    }
+    
+    input[type="file"] {
+        margin-bottom: 15px;
+    }
+    
+    button {
+        background-color: #28a745;
+        color: white;
+        border: none;
+        padding: 10px 15px;
+        border-radius: 5px;
+        cursor: pointer;
+    }
+    
+    button:hover {
+        background-color: #218838;
+    }
+
+    .file-info {
+        margin-top: 10px;
+        font-size: 14px;
+        color: #666;
+    }
+</style>
+</head>
+
+<body>
+    <h1>Upload Multiple Images</h1>
+    
+    <form action="http://localhost:3000/uploadMultipleFiles" method="post" enctype="multipart/form-data">
+        <label for="file">Choose Images:</label>
+        <input type="file" id="file" name="Acciojob" accept=".pdf" multiple required>
+        <div class="file-info">
+            <small>Hold Ctrl (Windows) or Cmd (Mac) to select multiple files</small>
+        </div>
+        <br><br>
+        <button type="submit">Upload</button>
+    </form>
+
+    <script>
+        document.getElementById('file').addEventListener('change', function(e) {
+            const fileCount = e.target.files.length;
+            const infoDiv = document.querySelector('.file-info');
+            if (fileCount > 0) {
+                infoDiv.innerHTML = `<small>${fileCount} file(s) selected</small>`;
+            } else {
+                infoDiv.innerHTML = '<small>Hold Ctrl (Windows) or Cmd (Mac) to select multiple files</small>';
+            }
+        });
+    </script>
+</body>
+</html>

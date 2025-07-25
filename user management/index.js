@@ -15,7 +15,7 @@ const uri = process.env.MONGO
 
 const corsOptions = {
     origin: "*", //replace with your frontend URL or IP Address
-    methods: "GET, PUT, POST, DELETE",//allowed HTTP methods 
+    methods: "GET, PUT, POST",//allowed HTTP methods 
     headers: "Content-Type, Authorization", //allowed headers
     credentials: true //allow credentials to be sent with the request
     
@@ -276,6 +276,26 @@ app.get("/users", verifyToken, async (req, res)=>{
     }
     catch(err){
         console.error("Error fetching users:", err);
+        res.status(500).send(err.message);
+    }
+})
+
+
+app.get("/sensitiveData", verifyToken, async (req, res)=>{
+    try{
+        const { email } = req.body;
+
+        const user = await User.findOne({email:email})
+        //role based access control or role based authorization
+        //this means that only users with the role of admin or superadmin can access this data
+        if(user.role!=="admin" && user.role!=="superadmin"){
+            return res.status(403).json({
+                message: "You are not authorized to access this data"
+            })
+        }
+
+    }catch(err){
+        console.error("Error fetching sensitive data:", err);
         res.status(500).send(err.message);
     }
 })
