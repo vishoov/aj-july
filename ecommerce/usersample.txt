@@ -1,0 +1,8 @@
+{
+   "name":"V",
+   "email":"vaaaohee1111eddhe@v.com",
+   "password":"397979ddig",
+   "address":"230 nala sopara",
+   "age":150,
+   "contact":10000000000
+}

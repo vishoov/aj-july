@@ -4,13 +4,16 @@ const dotenv = require("dotenv");
 dotenv.config();
 const mongoose = require("mongoose");
 const User = require("../model/user.model");
+const { createToken, verifyToken } = require("../auth/jwt.auth")
+
+
 
 router.get("/", async (req, res)=>{
     res.status(200).send("welcome to the user routes")
 })
 
 
-router.get("/users", async (req, res)=>{
+router.get("/users", verifyToken, async (req, res)=>{
     try{
         
         const users = await User.find({});
@@ -64,6 +67,8 @@ router.post("/signup", async (req, res)=>{
             
         })
 
+        const token = await createToken(user);
+
         await user.save(); //this saves the user to the database
         
         // const token = createToken(user)
@@ -80,8 +85,8 @@ router.post("/signup", async (req, res)=>{
                 role: user.role,
                 address: user.address,
                 contact: user.contact
-            }
-            // token:token
+            },
+            token:token
         })
 
         // const user = new User({})

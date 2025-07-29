@@ -3,6 +3,11 @@ const app = express();
 const userRoutes = require("./view/user.routes")
 const productRoutes = require("./view/product.routes")
 const mongoose = require("mongoose");
+const rateLimit = require("express-rate-limit");
+const cartRoutes = require("./view/cart.routes")
+const orderRoutes = require("./view/order.routes");
+
+
 
 mongoose.connect(process.env.MONGO)
 .then(() => {
@@ -17,6 +22,15 @@ app.use(express.json());
 const cors = require("cors");
 app.use(cors());
 
+
+const limiter = rateLimit({
+    windowMs:15*60*1000, // 15 minutes,
+    max:100, // Limit each IP to 100 requests per windowMs
+    message: "Too many requests from this IP, please try again later"
+})
+
+
+app.use(limiter);
 
 
 
@@ -34,6 +48,9 @@ app.get("/", async (req, res)=>{
 
 app.use("/user", userRoutes)
 app.use("/product", productRoutes)
+app.use("/cart", cartRoutes)
+app.use("/order", orderRoutes)
+
 
 app.listen(3000, ()=>{
     try{
